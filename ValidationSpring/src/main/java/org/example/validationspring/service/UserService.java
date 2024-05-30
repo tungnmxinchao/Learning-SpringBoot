@@ -4,6 +4,8 @@ package org.example.validationspring.service;
 import org.example.validationspring.dto.request.UserCreationRequest;
 import org.example.validationspring.dto.request.UserUpdateRequest;
 import org.example.validationspring.entity.User;
+import org.example.validationspring.exception.AppException;
+import org.example.validationspring.exception.ErrorCode;
 import org.example.validationspring.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,7 @@ public class UserService {
         User user = new User();
 
         if(userRepository.existsByUsername(request.getUsername())){
-            throw new RuntimeException("user is existed!");
+            throw new AppException(ErrorCode.USER_EXSIT);
         }
         user.setUsername(request.getUsername());
         user.setPassword(request.getPassword());
