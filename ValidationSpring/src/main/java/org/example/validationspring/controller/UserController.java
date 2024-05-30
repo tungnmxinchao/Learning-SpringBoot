@@ -1,6 +1,7 @@
 package org.example.validationspring.controller;
 
 import jakarta.validation.Valid;
+import org.example.validationspring.dto.request.ApiResponse;
 import org.example.validationspring.dto.request.UserCreationRequest;
 import org.example.validationspring.dto.request.UserUpdateRequest;
 import org.example.validationspring.entity.User;
@@ -17,8 +18,11 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    User createUser(@RequestBody @Valid UserCreationRequest request){
-        return userService.createUser(request);
+    ApiResponse<User> createUser(@RequestBody @Valid UserCreationRequest request){
+        ApiResponse<User> apiResponse = new ApiResponse<>();
+        apiResponse.setCode(1000);
+        apiResponse.setResult(userService.createUser(request));
+        return apiResponse;
     }
 
     @GetMapping
