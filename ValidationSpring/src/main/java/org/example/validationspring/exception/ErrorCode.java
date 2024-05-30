@@ -1,7 +1,9 @@
 package org.example.validationspring.exception;
 
 public enum ErrorCode {
-    USER_EXSIT(1001, "USER EXIST!")
+    UNCATEGORIZED_EXCEPTION(9999, "Uncategoried error!"),
+    USER_EXSIT(1001, "USER EXIST!"),
+    PASSWORD_INVALID(1003, "PASSWORD MUST BE AT LEAST 3 CHARACTER!")
     ;
     private int code;
     private String message;
