@@ -3,6 +3,7 @@ package org.example.validationspring.service;
 
 import org.example.validationspring.dto.request.UserCreationRequest;
 import org.example.validationspring.dto.request.UserUpdateRequest;
+import org.example.validationspring.dto.response.UserResponse;
 import org.example.validationspring.entity.User;
 import org.example.validationspring.exception.AppException;
 import org.example.validationspring.exception.ErrorCode;
@@ -37,16 +38,16 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User getUser(String id){
-        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found!"));
+    public UserResponse getUser(String id){
+        return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found!")));
     }
 
-    public User updateUser(String userId, UserUpdateRequest request){
-        User user = getUser(userId);
+    public UserResponse updateUser(String userId, UserUpdateRequest request){
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found!"));
 
         userMapper.updateUser(user, request);
 
-        return userRepository.save(user);
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 
     public void deleteUser(String userId){
