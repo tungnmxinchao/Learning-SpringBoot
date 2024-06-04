@@ -6,6 +6,7 @@ import org.example.validationspring.dto.request.UserUpdateRequest;
 import org.example.validationspring.entity.User;
 import org.example.validationspring.exception.AppException;
 import org.example.validationspring.exception.ErrorCode;
+import org.example.validationspring.mapper.UserMapper;
 import org.example.validationspring.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,17 +19,16 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserMapper userMapper;
+
     public User createUser(UserCreationRequest request){
-        User user = new User();
+
 
         if(userRepository.existsByUsername(request.getUsername())){
             throw new AppException(ErrorCode.USER_EXSIT);
         }
-        user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setDob(request.getDob());
+        User user = userMapper.toUser(request);
 
         return userRepository.save(user);
     }
@@ -44,10 +44,7 @@ public class UserService {
     public User updateUser(String userId, UserUpdateRequest request){
         User user = getUser(userId);
 
-        user.setPassword(request.getPassword());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setDob(request.getDob());
+        userMapper.updateUser(user, request);
 
         return userRepository.save(user);
     }
