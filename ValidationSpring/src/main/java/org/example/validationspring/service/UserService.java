@@ -10,6 +10,8 @@ import org.example.validationspring.exception.ErrorCode;
 import org.example.validationspring.mapper.UserMapper;
 import org.example.validationspring.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,7 +32,8 @@ public class UserService {
             throw new AppException(ErrorCode.USER_EXSIT);
         }
         User user = userMapper.toUser(request);
-
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         return userRepository.save(user);
     }
 
