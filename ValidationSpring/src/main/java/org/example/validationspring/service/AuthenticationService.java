@@ -13,17 +13,21 @@ import org.example.validationspring.dto.request.AuthenticationRequest;
 import org.example.validationspring.dto.request.IntrospectRequest;
 import org.example.validationspring.dto.response.AuthenticationResponse;
 import org.example.validationspring.dto.response.IntrospectResponse;
+import org.example.validationspring.entity.User;
 import org.example.validationspring.exception.AppException;
 import org.example.validationspring.exception.ErrorCode;
 import org.example.validationspring.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.Date;
+import java.util.StringJoiner;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +63,7 @@ public class AuthenticationService {
 
         if(!authenticated)
             throw new AppException(ErrorCode.UN_AUTHENTICATED);
-        var token = generateToken(request.getUsername());
+        var token = generateToken(user);
 
         return AuthenticationResponse.builder()
                 .token(token)
@@ -67,18 +71,25 @@ public class AuthenticationService {
                 .build();
     }
 
+    private String builtScope(User user){
+        StringJoiner stringJoiner = new StringJoiner(" ");
+        if(!CollectionUtils.isEmpty(user.getRoles()))
+            user.getRoles().forEach(stringJoiner::add);
+        return stringJoiner.toString();
+    }
 
-    private String generateToken(String username){
+
+    private String generateToken(User user){
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(username)
+                .subject(user.getUsername())
                 .issuer("tungnmxinchao")
                 .issueTime(new Date())
                 .expirationTime(new Date(
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
-                .claim("customClaim", "custom")
+                .claim("scope", builtScope(user))
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
