@@ -16,6 +16,8 @@ import org.example.validationspring.exception.ErrorCode;
 import org.example.validationspring.mapper.UserMapper;
 import org.example.validationspring.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -51,8 +53,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public List<User> getUsers(){
-
         var authentication = SecurityContextHolder.getContext().getAuthentication();
 
         log.info(authentication.getName());
@@ -62,6 +64,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse getUser(String id){
         return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found!")));
     }
