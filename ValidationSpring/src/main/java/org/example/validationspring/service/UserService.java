@@ -80,4 +80,13 @@ public class UserService {
     public void deleteUser(String userId){
         userRepository.deleteById(userId);
     }
+
+    public UserResponse getMyInfor(){
+        var contex = SecurityContextHolder.getContext();
+        String name = contex.getAuthentication().getName();
+
+        User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXSIT));
+
+        return userMapper.toUserResponse(user);
+    }
 }

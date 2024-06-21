@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.example.validationspring.dto.request.ApiResponse;
 import org.example.validationspring.dto.request.UserCreationRequest;
 import org.example.validationspring.dto.request.UserUpdateRequest;
+import org.example.validationspring.dto.response.IntrospectResponse;
 import org.example.validationspring.dto.response.UserResponse;
 import org.example.validationspring.entity.User;
 import org.example.validationspring.service.UserService;
@@ -46,5 +47,12 @@ public class UserController {
     String deleteUser(@PathVariable String userID){
         userService.deleteUser(userID);
         return "Deleted User" + userID;
+    }
+
+    @GetMapping("/myInfor")
+    ApiResponse<UserResponse> getMyInfor(){
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.getMyInfor())
+                .build();
     }
 }
